@@ -1,0 +1,247 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+  CLINIC
+}
+
+enum ClinicStatus{
+  ACTIVE
+  INACTIVE
+  BANNED
+}
+
+model User {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  email String @unique
+  password String
+  firstName String?
+  lastName String?
+  isVerified Boolean?
+  verificationToken String?
+  passwordResetToken String? 
+  posswordResetExpiryDate DateTime?
+  provider String?
+  profileImageUrl String?
+  refreshToken String?
+  role Role @default(USER)
+  clinics Clinic[]
+  shifts Shift[]
+  user_shifts User_Shifts[]
+  profile Profile?
+  device_token_firebase String?
+  favouriteClinics User_Fav_Clinics[]
+  favouritedByClinics Clinic_Fav_Users[]
+  noOfCanceledShift Int? @default(0)
+  cancledShiftDate DateTime?
+  isBannedByAdmin Boolean? @default(false)
+
+  noOfCompletedShift Int? @default(0)
+  noOfRatesInCompletedShift Int? @default(0)
+  rating Float? @default(0.0)
+
+  customerStripeId String?
+  customerStripeSetupIntentId String?
+
+  notifications Notification[]
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @default(now()) @updatedAt
+}
+
+model Profile{
+   id     String @id @default(auto()) @map("_id") @db.ObjectId
+
+   user   User @relation(fields: [userId], references: [id])
+   userId String @unique @db.ObjectId
+
+   firstName String?
+   lastName String?
+   middleName String?
+
+   position String?
+   expectedSalary ExpectedSalary?
+  
+   address Address?
+   educations Education[]
+   availabilities Availability[]
+
+   profilePictureUrl String? 
+   resumeUrl String?
+   certificateUrl String? 
+
+   status DoucmentStatus? @default(NO_CERTIFICATE_PROVIDED)
+   documentStatus DoucmentStatus? @default(NO_CERTIFICATE_PROVIDED)
+}
+
+enum DoucmentStatus{
+  APPROVED
+  PENDING_APPROVAL
+  REUPLOAD_REQUEST_CV
+  REUPLOAD_REQUEST_CERTIFICATE
+  REUPLOAD_REQUEST_BOTH
+  NO_CERTIFICATE_PROVIDED
+}
+
+type ExpectedSalary{
+  low Float
+  high Float
+}
+
+model Address{
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+
+  profile   Profile @relation(fields: [profileId], references: [id])
+  profileId String @unique @db.ObjectId
+
+  address String
+  city String
+  province String
+  postalCode String
+  contactNumber String
+  lattitude String?
+  longitude String?
+  radius String?
+}
+
+model Education{
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+
+  profile   Profile @relation(fields: [profileId], references: [id])
+  profileId String @db.ObjectId
+
+  schoolName String
+  yearOfGraduation String
+  course String
+}
+
+model Availability{
+   id     String @id @default(auto()) @map("_id") @db.ObjectId
+
+   profile   Profile @relation(fields: [profileId], references: [id])
+   profileId String @db.ObjectId
+
+   day String
+   start String
+   end String
+   isAvailable Boolean
+}
+
+model Clinic {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  clinicPersonnel   User @relation(fields: [clinicPersonnelId], references: [id])
+  clinicPersonnelId String @db.ObjectId
+
+  officeName String
+  address String
+  city String
+  province String
+  postalCode String 
+  lattitude String?
+  longitude String?
+  officePhoneNumber String
+  primaryContact String
+  parking String
+  charting String
+  software String
+  radioGraphs String
+  chairTime String
+  dentalScaler String
+  shifts Shift[]
+
+  favouritedByUsers User_Fav_Clinics[]
+  favouriteUsers Clinic_Fav_Users[]
+  
+  clinicStatus ClinicStatus @default(ACTIVE)
+}
+
+model Shift {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  clinicPersonnel   User @relation(fields: [clinicPersonnelId], references: [id])
+  clinicPersonnelId String @db.ObjectId
+
+  clinic   Clinic @relation(fields: [clinicId], references: [id])
+  clinicId String @db.ObjectId
+
+  shiftDate DateTime
+  startTime DateTime
+  endTime DateTime
+  description String?
+  jobRole String
+  rate Float
+  modifiedRate Float?
+
+  user_shifts User_Shifts[]
+
+  isComplete Boolean? @default(false)
+  isCompleteNotificationSent Boolean? @default(false)
+ 
+  isCharged Boolean? @default(false)
+}
+
+model User_Fav_Clinics{
+  id     String @id @default(auto()) @map("_id") @db.ObjectId 
+  tsm   User @relation(fields: [tsmId], references: [id])
+  tsmId String @db.ObjectId
+  clinic   Clinic @relation(fields: [clinicId], references: [id])
+  clinicId String @db.ObjectId
+  isFavourite Boolean?
+}
+
+model Clinic_Fav_Users{
+  id     String @id @default(auto()) @map("_id") @db.ObjectId 
+  tsm   User @relation(fields: [tsmId], references: [id])
+  tsmId String @db.ObjectId
+  clinic   Clinic @relation(fields: [clinicId], references: [id])
+  clinicId String @db.ObjectId
+  isFavourite Boolean?
+}
+
+
+model User_Shifts{
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  tsm   User @relation(fields: [tsmId], references: [id])
+  tsmId String @db.ObjectId
+  shift   Shift @relation(fields: [shiftId], references: [id])
+  shiftId String @db.ObjectId
+  isApplied Boolean? @default(false)
+  isOffered Boolean? @default(false)
+  isAcceptedByTSM Boolean? @default(false)
+  isAcceptedByCP Boolean? @default(false)
+  isMarkCompletedByTSM Boolean? @default(false)
+  isMarkCompletedByCP Boolean? @default(false)
+  isCanceledByTSM Boolean? @default(false)
+  rating Int?
+
+  isModified Boolean?
+  modifiedRate Float?
+
+  isCharged Boolean?
+}
+
+model Notification{
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+
+  user   User @relation(fields: [userId], references: [id])
+  userId String @db.ObjectId
+
+  message String
+  time DateTime
+  isRead Boolean?
+}
+
+model Post {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  title  String
+}
