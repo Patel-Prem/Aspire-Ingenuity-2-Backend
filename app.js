@@ -73,7 +73,9 @@ const options = {
         url: "http://localhost:3333",
       },
       {
-        url: "https://aspiringingenuityprojectbe-production.up.railway.app",
+        // Changed the URL when deployed on railway (by Prem)
+        // url: "https://aspiringingenuityprojectbe-production.up.railway.app",
+        url: "https://aspire-ingenuity-2-backend-production.up.railway.app/api/",
       },
     ],
   },
