@@ -472,7 +472,9 @@ const forgetEmail = (name, token) => {
                               <table width="100%" border="0" cellspacing="0" cellpadding="0" role="presentation">
                                 <tr>
                                   <td align="center">
-                                    <a href="https://tempsii.netlify.app/resetPassword?token=${token}" class="f-fallback button " target="_blank">Reset your password</a>
+                                  <!-- New Sub Domin Name (by Prem) -->
+                                    <!-- <a href="https://tempsii.netlify.app/resetPassword?token=${token}" class="f-fallback button " target="_blank">Reset your password</a> -->
+                                    <a href="https://tempsiitest.netlify.app/resetPassword?token=${token}" class="f-fallback button " target="_blank">Reset your password</a>
                                   </td>
                                 </tr>
                               </table>
@@ -487,7 +489,9 @@ const forgetEmail = (name, token) => {
                           <tr>
                             <td>
                               <p class="f-fallback sub">If you’re having trouble with the button above, copy and paste the URL below into your web browser.</p>
-                              <p class="f-fallback sub">https://tempsii.netlify.app/resetPassword?token=${token}</p>
+                              <!-- New Sub Domin Name (by Prem) -->
+                              // <p class="f-fallback sub">https://tempsii.netlify.app/resetPassword?token=${token}</p>
+                              <p class="f-fallback sub">https://tempsiitest.netlify.app/resetPassword?token=${token}</p>
                             </td>
                           </tr>
                         </table>

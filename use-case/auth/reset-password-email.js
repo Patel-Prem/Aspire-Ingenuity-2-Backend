@@ -20,7 +20,9 @@ const resetPasswordEmail = ({ authRepository }) => {
 
     const token = await generateResetToken(loggedInUser.id, loggedInUser.email);
     const text = `Please click \n here! `;
-    const baseURL = process.env.baseURL || "https://tempsii.netlify.app/";
+    // New Sub Domin Name (by Prem)
+    // const baseURL = process.env.baseURL || "https://tempsii.netlify.app/";
+    const baseURL = process.env.baseURL || "https://tempsiitest.netlify.app/";
 
     // const html = `<p>Hello <strong>${loggedInUser.email}! </strong><br/>  Please find the password reset link <a href="https://tempsii.netlify.app/resetPassword?token=${token}">Reset Token</a><p/>`;
 
